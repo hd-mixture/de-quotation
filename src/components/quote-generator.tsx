@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -30,6 +30,8 @@ interface QuoteGeneratorProps {
 
 export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteGeneratorProps) {
   const { toast } = useToast();
+
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const form = useForm<Quotation>({
     resolver: zodResolver(quotationSchema),
@@ -73,11 +75,10 @@ export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteG
     }
   };
 
-  const onGeneratePdf = () => {
+  const onGeneratePdf = async () => {
     const data = form.getValues();
     const validation = quotationSchema.safeParse(data);
     if (!validation.success) {
-        console.log("Validation error:", validation.error);
         toast({
             variant: "destructive",
             title: "Validation Error",
@@ -87,7 +88,13 @@ export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteG
         return;
     }
 
-    generatePdf(validation.data, validation.data.headerImage ? validation.data.headerImage : null);
+    // If the form is dirty (unsaved changes), save first
+    if (form.formState.isDirty) {
+      await onSave(validation.data);
+      // Optionally, you can reset the form's dirty state here if needed
+    }
+
+    await generatePdf(validation.data, validation.data.headerImage ? validation.data.headerImage : null);
      toast({
         title: "PDF Generated!",
         description: `${validation.data.quoteName}.pdf has been downloaded.`,
@@ -235,7 +242,7 @@ export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteG
                       <FormField control={form.control} name="quoteDate" render={({ field }) => (
                           <FormItem className="flex flex-col">
                               <FormLabel>Quotation Date</FormLabel>
-                              <Popover>
+                              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                                   <PopoverTrigger asChild>
                                       <FormControl>
                                           <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
@@ -245,7 +252,15 @@ export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteG
                                       </FormControl>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-auto p-0" align="start">
-                                      <Calendar mode="single" selected={field.value ? new Date(field.value) : undefined} onSelect={field.onChange} initialFocus />
+                                      <Calendar
+                                          mode="single"
+                                          selected={field.value ? new Date(field.value) : undefined}
+                                          onSelect={(date) => {
+                                              field.onChange(date);
+                                              setDatePickerOpen(false);
+                                          }}
+                                          initialFocus
+                                      />
                                   </PopoverContent>
                               </Popover>
                               <FormMessage />

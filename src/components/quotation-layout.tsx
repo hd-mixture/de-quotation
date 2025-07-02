@@ -11,6 +11,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import QuotationSidebar from '@/components/quotation-sidebar';
 import QuoteGenerator from '@/components/quote-generator';
 import { useToast } from '@/hooks/use-toast';
+import Loader from "@/components/Loader";
 
 const defaultQuotationValues: Quotation = {
   companyName: "DARSHAN ENTERPRISES",
@@ -37,6 +38,7 @@ export default function QuotationLayout() {
   const [quotations, setQuotations] = useState<QuotationWithId[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
 
   const activeId = searchParams.get('id');
 
@@ -65,6 +67,13 @@ export default function QuotationLayout() {
 
     return () => unsubscribe();
   }, [toast]);
+
+  // When activeId changes (user selects from sidebar or new), show loader for 1s
+  useEffect(() => {
+    setShowLoader(true);
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, [activeId]);
 
   const activeQuotation = useMemo(() => {
     if (!activeId) return defaultQuotationValues;
@@ -130,38 +139,41 @@ export default function QuotationLayout() {
   };
 
   return (
-    <SidebarProvider>
-      <QuotationSidebar
-        quotations={quotations}
-        activeId={activeId}
-        onDelete={handleDelete}
-        isLoading={isLoading}
-      />
-      <SidebarInset>
-        <div className="flex flex-col h-svh">
-            <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
-                <SidebarTrigger className="md:hidden"/>
-                <div className="flex-1">
-                    <h1 className="text-xl md:text-2xl font-semibold">
-                        DE Quotation Generator
-                    </h1>
-                </div>
-            </header>
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-                <div className="max-w-screen-2xl mx-auto">
-                    <p className="text-muted-foreground mb-8 max-w-3xl">
-                        Create, edit, and manage professional quotations. Your changes are saved when you click the save button.
-                    </p>
-                    <QuoteGenerator
-                        key={activeId || 'new'}
-                        initialData={activeQuotation}
-                        onSave={handleSave}
-                        isSaving={isSaving}
-                    />
-                </div>
-            </main>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      {showLoader && <Loader />}
+      <SidebarProvider>
+        <QuotationSidebar
+          quotations={quotations}
+          activeId={activeId}
+          onDelete={handleDelete}
+          isLoading={isLoading}
+        />
+        <SidebarInset>
+          <div className="flex flex-col h-svh">
+              <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+                  <SidebarTrigger className="md:hidden"/>
+                  <div className="flex-1">
+                      <h1 className="text-xl md:text-2xl font-semibold">
+                          DE Quotation Generator
+                      </h1>
+                  </div>
+              </header>
+              <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+                  <div className="max-w-screen-2xl mx-auto">
+                      <p className="text-muted-foreground mb-8 max-w-3xl">
+                          Create, edit, and manage professional quotations. Your changes are saved when you click the download button.
+                      </p>
+                      <QuoteGenerator
+                          key={activeId || 'new'}
+                          initialData={activeQuotation}
+                          onSave={handleSave}
+                          isSaving={isSaving}
+                      />
+                  </div>
+              </main>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }
