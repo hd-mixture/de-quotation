@@ -17,9 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.jpg" />
       </head>
       <body className="font-body antialiased">
-        <LayoutClient>
-          {children}
-        </LayoutClient>
+        <LayoutClient />
       </body>
     </html>
   );
