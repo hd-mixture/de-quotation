@@ -12,11 +12,16 @@ const overlayStyle: React.CSSProperties = {
   justifyContent: "center",
   background: "rgba(255,255,255,0.7)",
   backdropFilter: "blur(6px)",
+  transition: "opacity 0.4s cubic-bezier(0.4,0,0.2,1)",
+  opacity: 1,
 };
 
-const Loader = () => {
+const Loader = ({ visible = true, className = "" }: { visible?: boolean; className?: string }) => {
   return (
-    <div style={overlayStyle}>
+    <div
+      style={{ ...overlayStyle, opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none' }}
+      className={className + " fade-loader"}
+    >
       <svg className="pl" width={240} height={240} viewBox="0 0 240 240">
         <circle className="pl__ring pl__ring--a" cx={120} cy={120} r={105} fill="none" stroke="#f42f25" strokeWidth={20} strokeDasharray="0 660" strokeDashoffset={-330} strokeLinecap="round" />
         <circle className="pl__ring pl__ring--b" cx={120} cy={120} r={35} fill="none" stroke="#f49725" strokeWidth={20} strokeDasharray="0 220" strokeDashoffset={-110} strokeLinecap="round" />
@@ -24,6 +29,9 @@ const Loader = () => {
         <circle className="pl__ring pl__ring--d" cx={155} cy={120} r={70} fill="none" stroke="#f42582" strokeWidth={20} strokeDasharray="0 440" strokeLinecap="round" />
       </svg>
       <style>{`
+        .fade-loader {
+          transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
         .pl { width: 6em; height: 6em; }
         .pl__ring { animation: ringA 2s linear infinite; }
         .pl__ring--a { stroke: #f42f25; }

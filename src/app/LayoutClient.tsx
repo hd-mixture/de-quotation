@@ -4,21 +4,15 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
+import QuotationLayout from "@/components/quotation-layout";
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, [pathname]);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <>
-      {loading && <Loader />}
-      {children}
+      {isLoading && <Loader />}
+      <QuotationLayout isLoading={isLoading} setIsLoading={setIsLoading} />
       <Toaster />
       <Analytics />
     </>

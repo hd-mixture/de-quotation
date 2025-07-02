@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -30,15 +30,15 @@ const defaultQuotationValues: Quotation = {
   headerImage: undefined,
 };
 
-export default function QuotationLayout() {
+export default function QuotationLayout({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: (v: boolean) => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   
   const [quotations, setQuotations] = useState<QuotationWithId[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showLoader, setShowLoader] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
+  const prevActiveId = useRef<string | null>(null);
 
   const activeId = searchParams.get('id');
 
@@ -54,7 +54,7 @@ export default function QuotationLayout() {
         } as QuotationWithId;
       });
       setQuotations(quotesData);
-      setIsLoading(false);
+      setIsLoading(false); // Set global loading to false when data is loaded
     }, (error) => {
       console.error("Error fetching quotations:", error);
       toast({
@@ -62,16 +62,15 @@ export default function QuotationLayout() {
         title: "Error",
         description: "Could not fetch quotations from the database.",
       });
-      setIsLoading(false);
+      setIsLoading(false); // Set global loading to false on error
     });
 
     return () => unsubscribe();
-  }, [toast]);
+  }, [toast, setIsLoading]);
 
-  // When activeId changes (user selects from sidebar or new), show loader for 1s
   useEffect(() => {
-    setShowLoader(true);
-    const timer = setTimeout(() => setShowLoader(false), 1000);
+    setLocalLoading(true);
+    const timer = setTimeout(() => setLocalLoading(false), 400);
     return () => clearTimeout(timer);
   }, [activeId]);
 
@@ -140,7 +139,7 @@ export default function QuotationLayout() {
 
   return (
     <>
-      {showLoader && <Loader />}
+      {localLoading && <Loader visible={localLoading} />}
       <SidebarProvider>
         <QuotationSidebar
           quotations={quotations}
