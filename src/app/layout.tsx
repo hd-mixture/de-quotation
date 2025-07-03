@@ -1,13 +1,12 @@
 import './globals.css';
 import type { Metadata } from "next";
-import LayoutClient from "./LayoutClient";
 
 export const metadata: Metadata = {
   title: "DE Quotation Generator",
   description: 'Create, save, and download quotations in PDF format.',
 };
 
-export default function RootLayout() {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -17,7 +16,7 @@ export default function RootLayout() {
         <link rel="icon" href="/favicon.jpg" />
       </head>
       <body className="font-body antialiased">
-        <LayoutClient />
+        {children}
       </body>
     </html>
   );
