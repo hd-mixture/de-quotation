@@ -204,6 +204,7 @@ export const generatePdf = async (data: Quotation, customHeaderImage?: string | 
       }
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let finalY = (doc as any).lastAutoTable.finalY;
   
   const checkPageOverflow = (y: number) => {
