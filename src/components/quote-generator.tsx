@@ -9,7 +9,6 @@ import type { Quotation, QuotationWithId } from "@/types";
 import { quotationSchema } from "@/lib/schemas";
 import { generatePdf } from "@/lib/pdf-generator";
 import { cn } from "@/lib/utils";
-import { defaultHeaderImage } from '@/lib/default-header-image';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
