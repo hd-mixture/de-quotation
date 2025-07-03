@@ -53,7 +53,6 @@ export default function QuoteGenerator({ initialData, onSave, isSaving }: QuoteG
   
   const watchedItems = form.watch("lineItems");
   const watchedHeaderImage = form.watch("headerImage");
-  const headerImageToUse = watchedHeaderImage || defaultHeaderImage;
   const totalAmount = watchedItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.rate || 0), 0);
 
   const handleHeaderImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

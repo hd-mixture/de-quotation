@@ -32,13 +32,13 @@ export const generatePdf = async (data: Quotation, customHeaderImage?: string | 
   } else {
     try {
       headerImage = await fetchImageAsBase64('/header.png');
-    } catch (e) {
+    } catch {
       console.warn('Could not load header.png, will use text header.');
     }
   }
   try {
     signatureImage = await fetchImageAsBase64('/Signature.png');
-  } catch (e) {
+  } catch {
     console.warn('Could not load Signatue.png, will skip signature image.');
   }
 
@@ -69,8 +69,8 @@ export const generatePdf = async (data: Quotation, customHeaderImage?: string | 
         
         doc.addImage(headerImage, imageFormat, 10, 5, imageWidth, imageHeight);
         lastY = 5 + imageHeight + 10; // Added extra space here
-      } catch (error) {
-        console.error("Error adding header image:", error);
+      } catch {
+        console.error("Error adding header image:");
         addTextHeader();
       }
     } else {
@@ -251,8 +251,8 @@ export const generatePdf = async (data: Quotation, customHeaderImage?: string | 
       } else {
         finalY += 15; // fallback space
       }
-  } catch (e) {
-      console.error("Error adding signature image", e);
+  } catch {
+      console.error("Error adding signature image");
       finalY += 15; // fallback space
   }
   

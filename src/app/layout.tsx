@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Create, save, and download quotations in PDF format.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout() {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Quotation, QuotationWithId } from '@/types';
-import { defaultHeaderImage } from '@/lib/default-header-image';
 
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import QuotationSidebar from '@/components/quotation-sidebar';
@@ -38,7 +37,6 @@ export default function QuotationLayout({ isLoading, setIsLoading }: { isLoading
   const [quotations, setQuotations] = useState<QuotationWithId[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
-  const prevActiveId = useRef<string | null>(null);
 
   const activeId = searchParams.get('id');
 
